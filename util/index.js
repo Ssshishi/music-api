@@ -1,3 +1,4 @@
+//cookie 转换 形式
 module.exports = {
   toBoolean(val) {
     if (typeof val === 'boolean') return val

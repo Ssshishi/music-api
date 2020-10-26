@@ -1,3 +1,4 @@
+// 加密
 const crypto = require('crypto')
 const iv = Buffer.from('0102030405060708')
 const presetKey = Buffer.from('0CoJUm6Qyw8W8jud')
@@ -6,12 +7,12 @@ const base62 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 const publicKey =
   '-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDgtQn2JZ34ZC28NWYpAUd98iZ37BUrX/aKzmFbt7clFSs6sXqHauqKWqdtLkF2KexO40H1YTX8z2lSgBBOAxLsvaklV8k4cBFK9snQXE9/DDaFt6Rr7iVZMldczhC0JNgTz+SHXT6CBHuX3e9SdB1Ua44oncaTWz7OBGLbCiK45wIDAQAB\n-----END PUBLIC KEY-----'
 const eapiKey = 'e82ckenh8dichen8'
-
+// AES加密 高级加密标准
 const aesEncrypt = (buffer, mode, key, iv) => {
   const cipher = crypto.createCipheriv('aes-128-' + mode, key, iv)
   return Buffer.concat([cipher.update(buffer), cipher.final()])
 }
-
+// RSA加密
 const rsaEncrypt = (buffer, key) => {
   buffer = Buffer.concat([Buffer.alloc(128 - buffer.length), buffer])
   return crypto.publicEncrypt(
@@ -19,7 +20,7 @@ const rsaEncrypt = (buffer, key) => {
     buffer,
   )
 }
-
+// 微信API
 const weapi = (object) => {
   const text = JSON.stringify(object)
   const secretKey = crypto
@@ -37,7 +38,7 @@ const weapi = (object) => {
     encSecKey: rsaEncrypt(secretKey.reverse(), publicKey).toString('hex'),
   }
 }
-
+// LinuxAPI
 const linuxapi = (object) => {
   const text = JSON.stringify(object)
   return {
@@ -46,7 +47,7 @@ const linuxapi = (object) => {
       .toUpperCase(),
   }
 }
-
+// e api
 const eapi = (url, object) => {
   const text = typeof object === 'object' ? JSON.stringify(object) : object
   const message = `nobody${url}use${text}md5forencrypt`
@@ -59,6 +60,7 @@ const eapi = (url, object) => {
   }
 }
 
+// 密码缓存
 const decrypt = (cipherBuffer) => {
   const decipher = crypto.createDecipheriv('aes-128-ecb', eapiKey, '')
   return Buffer.concat([decipher.update(cipherBuffer), decipher.final()])

@@ -1,5 +1,9 @@
+// mocha单元测试
+// assert 简单的断言测试功能
+// 如果是true则测试通过，如果是false则测试不通过
 const assert = require('assert')
 const axios = require('axios')
+// 主机名
 const host = global.host || 'http://localhost:3000'
 
 describe('测试获取歌手专辑列表是否正常', () => {
@@ -7,7 +11,7 @@ describe('测试获取歌手专辑列表是否正常', () => {
     const qs = {
       id: 32311,
     }
-
+    // 请求 /album 请求内容
     axios
       .get(`${host}/album`, {
         params: qs,

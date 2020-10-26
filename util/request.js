@@ -1,3 +1,4 @@
+// 请求 代理
 const encrypt = require('./crypto')
 const axios = require('axios')
 const queryString = require('querystring')
@@ -9,6 +10,7 @@ const https = require('https')
 
 const chooseUserAgent = (ua = false) => {
   // UA 列表要经常更新啊
+  // 用户代理列表
   const userAgentList = {
     mobile: [
       // iOS 13.5.1 14.0 beta with safari
@@ -36,17 +38,21 @@ const chooseUserAgent = (ua = false) => {
       // Linux 就算了
     ],
   }
+  // 真实用户代理
   let realUserAgentList =
     userAgentList[ua] || userAgentList.mobile.concat(userAgentList.pc)
   return ['mobile', 'pc', false].indexOf(ua) > -1
     ? realUserAgentList[Math.floor(Math.random() * realUserAgentList.length)]
     : ua
 }
+// 创建请求
 const createRequest = (method, url, data, options) => {
   return new Promise((resolve, reject) => {
     let headers = { 'User-Agent': chooseUserAgent(options.ua) }
+
     if (method.toUpperCase() === 'POST')
       headers['Content-Type'] = 'application/x-www-form-urlencoded'
+
     if (url.includes('music.163.com'))
       headers['Referer'] = 'https://music.163.com'
     if (options.realIP) headers['X-Real-IP'] = options.realIP
@@ -65,6 +71,7 @@ const createRequest = (method, url, data, options) => {
     if (!headers['Cookie']) {
       headers['Cookie'] = options.token || ''
     }
+
     if (options.crypto === 'weapi') {
       let csrfToken = (headers['Cookie'] || '').match(/_csrf=([^(;|$)]+)/)
       data.csrf_token = csrfToken ? csrfToken[1] : ''
@@ -110,7 +117,9 @@ const createRequest = (method, url, data, options) => {
       url = url.replace(/\w*api/, 'eapi')
     }
 
+    // 回应 状态码 内容 cookie
     const answer = { status: 500, body: {}, cookie: [] }
+    // 设置项
     const settings = {
       method: method,
       url: url,
@@ -121,14 +130,14 @@ const createRequest = (method, url, data, options) => {
     }
 
     if (options.crypto === 'eapi') settings.encoding = null
-
+    // 代理 选项中代理是以.pac结束的 执行
     if (/\.pac$/i.test(options.proxy)) {
       settings.httpAgent = new PacProxyAgent(options.proxy)
       settings.httpsAgent = new PacProxyAgent(options.proxy)
     } else {
       settings.proxy = options.proxy
     }
-
+    // 依据setting 进行异步http请求
     axios(settings)
       .then((res) => {
         const body = res.data

@@ -1,4 +1,7 @@
+// 插件 上传
 const axios = require('axios')
+// await后面接一个会return new promise的函数并执行它
+// await只能放在async函数里
 module.exports = async (query, request) => {
   const data = {
     bucket: 'yyimgs',

@@ -1,3 +1,6 @@
+// api缓存
+
+// url
 var url = require('url')
 var MemoryCache = require('./memory-cache')
 
@@ -10,33 +13,37 @@ var t = {
   week: 3600000 * 24 * 7,
   month: 3600000 * 24 * 30,
 }
-
+// 定义一个实例数组
 var instances = []
 
+// 匹配
+// 分别输入两个参数 (a)(b)
 var matches = function (a) {
   return function (b) {
     return a === b
   }
 }
-
+// 不匹配
 var doesntMatch = function (a) {
   return function (b) {
     return !matches(a)(b)
   }
 }
-
+// 日志时长
 var logDuration = function (d, prefix) {
   var str = d > 1000 ? (d / 1000).toFixed(2) + 'sec' : d + 'ms'
   return '\x1b[33m- ' + (prefix ? prefix + ' ' : '') + str + '\x1b[0m'
 }
 
+// 获取安全头部
 function getSafeHeaders(res) {
   return res.getHeaders ? res.getHeaders() : res._headers
 }
 
+// API缓存
 function ApiCache() {
   var memCache = new MemoryCache()
-
+  // 全局选项
   var globalOptions = {
     debug: false,
     defaultDuration: 3600000,
